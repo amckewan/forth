@@ -59,6 +59,7 @@ variable tax-owed       \ total tax owed
 variable total-tax-paid \ total tax paid over the the whole plan
 
 variable spending       \ actual yearly spending, may be less than requested
+variable total-spending \ total spending for the plan
 
 \ Initialize data at start of simulation
 : init ( -- )
@@ -68,7 +69,7 @@ variable spending       \ actual yearly spending, may be less than requested
     tfsa-start tfsa open-account
     tax-owed-start tax-owed !
     total-tax-paid off
-    spending off ;
+    spending off  total-spending off ;
 
 
 \ Use 10-char columns for reports
@@ -97,9 +98,9 @@ variable spending       \ actual yearly spending, may be less than requested
         then
     then ;
 
-\ Spend amount if we have it, leave actual value in `spending`
+\ Spend amount if we have it, leave actual value in `spending` ( yearly )
 : maybe-spend ( amount -- )
-    assets min  dup spending !  spend ;
+    assets min  dup spending !  dup total-spending +!  spend ;
 
 
 \ === Taxes ===
@@ -167,6 +168,8 @@ variable spending       \ actual yearly spending, may be less than requested
 
 \ === Print data at year end ===
 
+: sep  ."  - " ;
+
 : .title ( -- )  cr ." Age"
     s" RspWithd"    hdr
     s" Pension"     hdr
@@ -176,10 +179,11 @@ variable spending       \ actual yearly spending, may be less than requested
     s" Rate"        hdr
     s" NetInc"      hdr
     s" Spending"    hdr
+    sep
     s" Cash EOY"    hdr
     s" RSP EOY"     hdr
     s" TFSA EOY"    hdr
-    s" Net Worth"   hdr ;
+    s" Total EOY"   hdr ;
 
 : real-investment-income ( -- income )
     cash starting-balance  real-return % ;
@@ -200,7 +204,7 @@ variable spending       \ actual yearly spending, may be less than requested
     total-income effective-rate %..
     after-tax-income $..
     spending @ $..
-    .assets ;
+    sep .assets ;
 
 
 \ === Simulate the plan ===
