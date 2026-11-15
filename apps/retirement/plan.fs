@@ -1,4 +1,4 @@
-( Retirement Financial Simulation )
+( Retirement Financial Planner )
 
 [defined] empty [if] empty [then] marker empty
 warnings off decimal
@@ -23,14 +23,13 @@ require assumptions.fs      \ Financial assumptions
 \ Pension by age
 defer pension ( age -- income )
 defer taxable-pension ( age -- income )
+' pension is taxable-pension
 
 : default-pension ( age -- income )  70 >=  2000 monthly and ;
 ' default-pension is pension
-' pension is taxable-pension
 
 \ RSP required minimum distributions
 defer rmd ( balance age -- rmd )
-\ ' ira-rmd is rmd
 ' rrif-minimum is rmd
 
 \ RSP drawdown strategy, before RMDs kick in.
@@ -38,13 +37,10 @@ defer rmd ( balance age -- rmd )
 0 value rsp-drawdown
 
 \ Annual TFSA contribution, up to tfsa-limit
-tfsa-limit value tfsa-contribution
+0 value tfsa-contribution
 
-\ Tax owed for first year
+\ Tax owed for the first year
 5000 value tax-owed-start
-
-\ Spending goal
-50000 value spending
 
 
 \ === Model data, updated during the simulation. ===
@@ -131,14 +127,15 @@ variable spending       \ actual yearly spending, may be less than requested
 \ === Yearly activites ===
 
 : deposit-pension ( -- )  \ deposit pension into cash account
-    age @ pension cash deposit ;
+    age @ pension  cash deposit ;
 
 : grow-investments ( -- )
     real-return   dup cash grow   dup rsp grow   tfsa grow ;
 
-\ Make TFSA contribution from cash/RSP (January)
+\ Make TFSA contribution from cash (January)
 : make-tfsa-contribution ( -- )
-    tfsa-contribution  assets min  dup spend  tfsa deposit ;
+    tfsa-contribution  tfsa-limit min  cash balance min
+    dup spend  tfsa deposit ;
 
 \ Make RSP withdrawal to cash (December)
 : rsp-withdrawal ( -- amount )
@@ -154,37 +151,30 @@ variable spending       \ actual yearly spending, may be less than requested
 
 \ =========================================
 \ A year in the life...
-\ - Record RSP balance for RMD calculation
-\ - Make TFSA contribution (may draw on RSP)
-\ - Pay last year's taxes (really payable - instalments )
-\ - Grow cash, RSP, TFSA
-\ - Spending and taxes (how do we know?)
-\ - RSP withdrawal (affects taxes)
-\ - Calculate & pay taxes
 
 : year ( spending -- )
     rsp start                   \ start RSP for RMD/taxes
     deposit-pension             \ deposit pension (it will get spent)
     pay-taxes                   \ pay last year's taxes
-    make-tfsa-contribution      \ optional TFSA contribution
     maybe-spend                 \ spend, if we have it
+    make-tfsa-contribution      \ optional TFSA contribution
     cash start                  \ remember starting balance for taxes
     ( ... the year goes by ... )
-    grow-investments
-    make-rsp-withdrawal
-    calculate-taxes ( to be paid next year ) ;
+    grow-investments            \ grow investment accounts
+    make-rsp-withdrawal         \ make RSP withdrawal (affects taxes)
+    calculate-taxes ;           \ to be paid next year
 
 
 \ === Print data at year end ===
 
 : .title ( -- )  cr ." Age"
-    s" RspDist"     hdr
+    s" RspWithd"    hdr
     s" Pension"     hdr
-    s" CashInc"     hdr
+    s" InvInc"      hdr
     s" TotalInc"    hdr
     s" Tax"         hdr
-\    s" EffRate"     hdr
-    s" AfterTax"    hdr
+    s" Rate"        hdr
+    s" NetInc"      hdr
     s" Spending"    hdr
     s" Cash EOY"    hdr
     s" RSP EOY"     hdr
@@ -207,7 +197,7 @@ variable spending       \ actual yearly spending, may be less than requested
     real-investment-income $..
     total-income $..
     tax-owed @ $..
-\    total-income tax-owed @ effective-rate %..
+    total-income effective-rate %..
     after-tax-income $..
     spending @ $..
     .assets ;
@@ -215,13 +205,17 @@ variable spending       \ actual yearly spending, may be less than requested
 
 \ === Simulate the plan ===
 
+: run ( spending -- )
+    init  age-end 1+ age-start do   i age !   dup year   loop drop ;
+
 : plan ( spending -- )
     init .title
-    cr 7 width * 3 + spaces .assets
+    cr 8 width * 3 + spaces .assets
     age-end 1+ age-start do
         i age !  dup year  .year 
     loop drop
-    cr ." Total tax paid: " total-tax-paid @ $.
+    cr ." Total tax paid:  " total-tax-paid @ $..
+    cr ." Final net worth: " assets $..
     ;
 
 : p ( n -- )  1000 * plan ;

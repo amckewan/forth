@@ -14,9 +14,6 @@ require utils.fs
         rot + swap
     2 cells +loop  drop ;
 
-: effective-rate ( income tax -- eff-rate )
-    10000 rot */ ;
-
 
 \ === Canada federal tax ===
 
@@ -71,6 +68,9 @@ create ont-rates ( 2026 )
 
 \ === Print tax table ===
 
+: effective-rate ( income -- eff-rate )
+    dup ca-tax  10000 rot */ ;
+
 : marginal-rate ( income -- rate )
     dup 10000 + ca-tax  swap ca-tax - ;
 
@@ -82,7 +82,7 @@ create ont-rates ( 2026 )
     210000 40000 do  cr
         i 10 $.r
         i ca-tax 10 $.r
-        i dup ca-tax effective-rate 10 %.r
+        i effective-rate 10 %.r
         i marginal-rate 10 %.r
     10000 +loop ;
 
