@@ -1,8 +1,41 @@
+<style>
+  body { font-size: 18px; }
+  pre, code { font-size: 0.85em; }
+</style>   
+
 # Retirement Planner in Forth
 
-- How I did it with Claude and a spreadsheet
-- 
+When I retired last year, I did my financial forecast in a spreadsheet
+with help from Claude. I have since replaced that with a Forth application
+that gives me more control and a better interface.
+I will demonstrate using it to help decide how much to spend each year,
+and when to start withdrawing from retirement savings.
 
+# What goes in to the plan?
+The plan takes two kinds of data,
+things I can change, like how much I spend,
+and things I can not, such as taxes and inflation.
+
+Fixed values:
+- Assumptions: investment return, inflation, tax rates, etc.
+- Financial assets:
+  - **Cash** - taxable investments
+  - **RSP** - tax-deferred retirement savings (IRA/401K)
+  - **TFSA** - tax-free savings account (Roth IRA)
+- RSP age-based withdrawal rules
+- Pension income (although I can adjust starting age)
+
+Things I can change include:
+- Annual spending
+- RSP drawdown before RMDs
+- TFSA contributions
+
+The goal is to maximize spending without running out of money
+before the plan ends.
+
+[Assumptions](assumptions.fs)
+
+[Financial data](demo.fs)
 
 # Running the plan
 The starting parameters are in `demo.fs`.

@@ -8,8 +8,8 @@ include plan.fs
 
 \ Starting financial assets
 300000 to cash-start    \ taxable investments
-500000 to rsp-start     \ retirement savings, taxed on withdrawal
-200000 to tfsa-start    \ tax-free investments
+500000 to rsp-start     \ tax-free growth, taxed on withdrawal
+200000 to tfsa-start    \ fully tax free
 
 \ Tax owed for the first year
 5000 to tax-owed-start
@@ -26,3 +26,6 @@ include plan.fs
 
 \ Annual TFSA contribution, up to tfsa-limit
 0 to tfsa-contribution
+
+
+include opt.fs ( for demo )

@@ -192,16 +192,16 @@ variable total-spending \ total spending for the plan
     rsp withdrawals   age @ pension +   real-investment-income + ;
 
 : after-tax-income ( -- income ) \ real income minus taxes paid
-    total-income  tax-owed @ - ;
+    taxable-income  tax-owed @ - ;
 
 : .year ( -- )
     cr age @ .
     rsp withdrawals $..
     age @ pension $..
-    real-investment-income $..
-    total-income $..
+    taxable-investment-income $..
+    taxable-income $..
     tax-owed @ $..
-    total-income effective-rate %..
+    taxable-income effective-rate %..
     after-tax-income $..
     spending @ $..
     sep .assets ;
@@ -212,14 +212,28 @@ variable total-spending \ total spending for the plan
 : run ( spending -- )
     init  age-end 1+ age-start do   i age !   dup year   loop drop ;
 
+<<<<<<< HEAD
+=======
+: .end
+    cr ." Total spending: " total-spending @ $..
+    cr ." Total tax paid: " total-tax-paid @ $..
+    cr ." Final assets:   " assets $.. ;
+
+>>>>>>> 61498c4 (Edit plan)
 : plan ( spending -- )
     init .title
     cr 8 width * 3 + spaces .assets
     age-end 1+ age-start do
         i age !  dup year  .year 
+<<<<<<< HEAD
     loop drop
     cr ." Total tax paid:  " total-tax-paid @ $..
     cr ." Final net worth: " assets $..
     ;
+=======
+    loop drop .end ;
 
-: p ( n -- )  1000 * plan ;
+: r  1000 * run .end ;
+: p  1000 * plan ;
+>>>>>>> 61498c4 (Edit plan)
+

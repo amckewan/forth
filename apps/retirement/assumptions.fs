@@ -2,7 +2,7 @@
 
 require utils.fs
 
-\ The model assumes a constant USD to CAD exchange rate, used at load time. )
+\ The model assumes a constant USD to CAD exchange rate.
 13000 ( 1.3000 ) constant usd>cad
 
 : usd ( usd -- cad )  usd>cad % ;
