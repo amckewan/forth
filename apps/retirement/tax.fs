@@ -7,10 +7,11 @@ require utils.fs
  7000 constant tfsa-limit       \ annual contribution limit
 
 \ Calculate tax from a table of income/rate pairs
+: bracket ( bracket income -- tax )
+    over 2 cells + @ min  over @ - 0 max  swap cell+ @ % ;
 : calc-tax ( 0 income rates #entries -- tax )
     2* cells bounds do  ( tax income -- )
-        dup i @ <= if leave then
-        dup i 2 cells + @ min   i @ -   i cell+ @   %
+        i over bracket
         rot + swap
     2 cells +loop  drop ;
 

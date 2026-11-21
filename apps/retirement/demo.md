@@ -11,6 +11,16 @@ that gives me more control and a better interface.
 I will demonstrate using it to help decide how much to spend each year,
 and when to start withdrawing from retirement savings.
 
+## Nominal vs. Real investment returns
+The **nominal** return is the return you see in financial statements.
+For example, over the last 20 years the S&P 500 has returned about 10% annually.
+The **real** return is the nominal return adjusted for inflation.
+For example, a 4.5% nominal return with 2.5% inflation yields a 2% real return.
+
+All numbers in the plan are in real dollars.
+So $1,000 at age 90 is worth about the same as $1,000 today.
+Inflation is factored in when we grow our investments.
+
 # What goes in to the plan?
 The plan takes two kinds of data,
 things I can change, like how much I spend,
@@ -58,18 +68,21 @@ taxes and increase final net worth.
 
 Try:
 ```
-: try-rsp ( spendingK -- )  1000 * to rsp-drawdown  60 p ;
-10000 try-rsp
-20000 try-rsp
-30000 try-rsp
-40000 try-rsp
+60 value goal
+: try-rsp ( rspdraw -- )  1000 * to rsp-drawdown  goal p ;
+10 try-rsp
+20 try-rsp
+30 try-rsp
+40 try-rsp
 
-: try-tfsa ( spendingK -- )  1000 * to tfsa-contribution  60 p ;
-1000 try-tfsa
-3000 try-tfsa
-6000 try-tfsa
+: try-tfsa ( tfsa -- )  1000 * to tfsa-contribution  goal p ;
+1 try-tfsa
+3 try-tfsa
+6 try-tfsa
 
 ```
 
 We can run try all combinations with `optimize.fs`.
+
+60 opt
 

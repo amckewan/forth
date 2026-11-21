@@ -78,6 +78,13 @@ variable total-spending \ total spending for the plan
 : %..  width %.r ;
 : hdr ( a n -- )  width type.r ;
 
+: .init
+    cr ." Initial Cash: " cash-start $..
+    cr ." Initial RSP:  " rsp-start $..
+    cr ." Initial TFSA: " tfsa-start $..
+    cr ." RSP Drawdown: " rsp-drawdown $..
+    cr ." TFSA Contrib: " tfsa-contribution $.. ;
+
 
 \ === Spending ===
 
@@ -209,31 +216,21 @@ variable total-spending \ total spending for the plan
 
 \ === Simulate the plan ===
 
-: run ( spending -- )
+: run ( spending -- ) \ run plan, no output
     init  age-end 1+ age-start do   i age !   dup year   loop drop ;
 
-<<<<<<< HEAD
-=======
 : .end
     cr ." Total spending: " total-spending @ $..
     cr ." Total tax paid: " total-tax-paid @ $..
     cr ." Final assets:   " assets $.. ;
 
->>>>>>> 61498c4 (Edit plan)
 : plan ( spending -- )
     init .title
-    cr 8 width * 3 + spaces .assets
+    cr 8 width * 3 + spaces sep .assets
     age-end 1+ age-start do
         i age !  dup year  .year 
-<<<<<<< HEAD
-    loop drop
-    cr ." Total tax paid:  " total-tax-paid @ $..
-    cr ." Final net worth: " assets $..
-    ;
-=======
     loop drop .end ;
 
 : r  1000 * run .end ;
 : p  1000 * plan ;
->>>>>>> 61498c4 (Edit plan)
 
